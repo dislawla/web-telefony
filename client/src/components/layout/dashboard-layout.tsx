@@ -8,8 +8,7 @@ import {
   Settings,
   LogOut,
   Menu,
-  ChevronLeft,
-  ChevronRight,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +16,14 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import {
@@ -97,41 +104,44 @@ function Navigation() {
   );
 }
 
-function Sidebar({ collapsed }: { collapsed?: boolean }) {
+function UserMenu() {
   const { user, logoutMutation } = useAuth();
 
   return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="w-full justify-start">
+          <User className="h-4 w-4 mr-2" />
+          <span>{user?.username}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start" side="right">
+        <DropdownMenuLabel>Мой профиль</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem disabled>
+          {user?.companyName}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
+          <LogOut className="h-4 w-4 mr-2" />
+          Выйти
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function Sidebar() {
+  return (
     <div className="flex flex-col h-full p-4">
-      <div className={cn(
-        "flex items-center gap-2 px-3 py-2 mb-8",
-        collapsed && "justify-center"
-      )}>
+      <div className="flex items-center gap-2 px-3 py-2 mb-4">
         <Phone className="h-6 w-6" />
-        {!collapsed && <span className="font-semibold">AI Caller</span>}
+        <span className="font-semibold">AI Caller</span>
       </div>
 
-      <Navigation />
+      <UserMenu />
 
-      <div className="mt-auto pt-4 border-t">
-        {!collapsed && (
-          <div className="px-3 py-2 mb-2">
-            <div className="font-medium">{user?.username}</div>
-            <div className="text-sm text-muted-foreground">
-              {user?.companyName}
-            </div>
-          </div>
-        )}
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full",
-            collapsed ? "justify-center" : "justify-start"
-          )}
-          onClick={() => logoutMutation.mutate()}
-        >
-          <LogOut className="h-4 w-4" />
-          {!collapsed && <span className="ml-2">Выйти</span>}
-        </Button>
+      <div className="mt-6">
+        <Navigation />
       </div>
     </div>
   );
@@ -143,7 +153,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -168,24 +177,11 @@ export default function DashboardLayout({
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             defaultSize={20}
-            minSize={isCollapsed ? 5 : 15}
+            minSize={15}
             maxSize={30}
-            size={isCollapsed ? 5 : 20}
-            className="border-r relative"
+            className="border-r"
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-[-12px] top-4 z-10"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-            <Sidebar collapsed={isCollapsed} />
+            <Sidebar />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
