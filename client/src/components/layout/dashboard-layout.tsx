@@ -169,6 +169,12 @@ function UserMenu() {
       <DropdownMenuContent className="w-56" align="start" side="right">
         <DropdownMenuLabel>Мой профиль</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <Link href="/profile">
+          <DropdownMenuItem className="cursor-pointer">
+            <User className="h-4 w-4 mr-2" />
+            Просмотр профиля
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuItem disabled>
           {user?.companyName}
         </DropdownMenuItem>
