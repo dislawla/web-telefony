@@ -43,7 +43,9 @@ export function setupAuth(app: Express) {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
       sameSite: 'lax',
       path: '/',
+      httpOnly: true
     },
+    name: 'session'
   };
 
   app.set("trust proxy", 1);
