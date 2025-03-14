@@ -27,7 +27,7 @@ export default function Profile() {
     },
     onSuccess: () => {
       setIsEditing(false);
-      queryClient.invalidateQueries(["/api/user"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Профиль обновлен",
         description: "Ваши данные успешно сохранены",
