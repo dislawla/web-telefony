@@ -11,6 +11,7 @@ import {
   User,
   Building,
   Database,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,6 +78,11 @@ function Navigation() {
       href: "/contacts",
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
+    },
+    {
+      href: "/messengers",
+      icon: <MessageCircle className="h-4 w-4" />,
+      label: "Мессенджеры",
     },
   ];
 

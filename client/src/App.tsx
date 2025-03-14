@@ -8,6 +8,7 @@ import AuthPage from "@/pages/auth-page";
 import Dashboard from "@/pages/dashboard";
 import Contacts from "@/pages/contacts";
 import Calls from "@/pages/calls";
+import Messengers from "@/pages/messengers";
 import Settings from "@/pages/settings";
 import TelephonySettings from "@/pages/settings/telephony";
 import DatabaseSettings from "@/pages/settings/database";
@@ -21,6 +22,7 @@ function Router() {
       <ProtectedRoute path="/" component={Dashboard} />
       <ProtectedRoute path="/contacts" component={Contacts} />
       <ProtectedRoute path="/calls" component={Calls} />
+      <ProtectedRoute path="/messengers" component={Messengers} />
       <ProtectedRoute path="/settings" component={Settings} />
       <ProtectedRoute path="/settings/telephony" component={TelephonySettings} />
       <ProtectedRoute path="/settings/database" component={DatabaseSettings} />
