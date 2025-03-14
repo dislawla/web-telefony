@@ -24,6 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
+// Схема валидации формы настроек телефонии
+// Описывает структуру и правила валидации для всех полей формы
 const telephonyFormSchema = z.object({
   apiKey: z.string().min(1, "API ключ обязателен"),
   incomingCalls: z.object({
@@ -43,10 +45,13 @@ const telephonyFormSchema = z.object({
   }),
 });
 
+// Тип данных формы, сгенерированный из схемы валидации
 type TelephonyFormValues = z.infer<typeof telephonyFormSchema>;
 
 export default function Settings() {
   const { toast } = useToast();
+
+  // Инициализация формы с настройками по умолчанию
   const form = useForm<TelephonyFormValues>({
     resolver: zodResolver(telephonyFormSchema),
     defaultValues: {
@@ -67,9 +72,10 @@ export default function Settings() {
     },
   });
 
+  // Обработчик отправки формы
   async function onSubmit(data: TelephonyFormValues) {
     try {
-      // Здесь будет логика сохранения настроек
+      // Здесь будет логика сохранения настроек в базу данных
       toast({
         title: "Настройки сохранены",
         description: "Настройки телефонии успешно обновлены",
@@ -86,6 +92,7 @@ export default function Settings() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Заголовок страницы */}
         <div>
           <h1 className="text-3xl font-bold">Настройки телефонии</h1>
           <p className="text-muted-foreground">
@@ -95,6 +102,7 @@ export default function Settings() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Блок API ключа */}
             <Card>
               <CardHeader>
                 <CardTitle>API ключ</CardTitle>
@@ -116,11 +124,13 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            {/* Блок настроек входящих звонков */}
             <Card>
               <CardHeader>
                 <CardTitle>Входящие звонки</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Настройка маршрутизации звонков */}
                 <FormField
                   control={form.control}
                   name="incomingCalls.routing"
@@ -150,6 +160,7 @@ export default function Settings() {
                   )}
                 />
 
+                {/* Настройка голосового приветствия */}
                 <FormField
                   control={form.control}
                   name="incomingCalls.greeting"
@@ -164,6 +175,7 @@ export default function Settings() {
                   )}
                 />
 
+                {/* Настройка времени ожидания */}
                 <FormField
                   control={form.control}
                   name="incomingCalls.waitTime"
@@ -180,11 +192,13 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            {/* Блок настроек исходящих звонков */}
             <Card>
               <CardHeader>
                 <CardTitle>Исходящие звонки</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Настройка номера телефона */}
                 <FormField
                   control={form.control}
                   name="outgoingCalls.phoneNumber"
@@ -199,6 +213,7 @@ export default function Settings() {
                   )}
                 />
 
+                {/* Настройка записи звонков */}
                 <FormField
                   control={form.control}
                   name="outgoingCalls.recordCalls"
@@ -222,11 +237,13 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            {/* Блок настроек интеграции с ИИ */}
             <Card>
               <CardHeader>
                 <CardTitle>Интеграция с ИИ</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Настройка анализа разговоров */}
                 <FormField
                   control={form.control}
                   name="aiIntegration.analyzeConversations"
@@ -248,6 +265,7 @@ export default function Settings() {
                   )}
                 />
 
+                {/* Настройка транскрибации */}
                 <FormField
                   control={form.control}
                   name="aiIntegration.transcriptionEnabled"
@@ -271,6 +289,7 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            {/* Кнопка сохранения настроек */}
             <Button type="submit" className="w-full">
               {form.formState.isSubmitting ? (
                 <>
