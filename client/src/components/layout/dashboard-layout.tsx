@@ -45,9 +45,9 @@ interface NavLinkProps {
 function NavLink({ href, icon, children, isActive }: NavLinkProps) {
   return (
     <Link href={href}>
-      <a
+      <button
         className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+          "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors w-full text-left",
           isActive
             ? "bg-primary text-primary-foreground"
             : "hover:bg-primary/10"
@@ -55,7 +55,7 @@ function NavLink({ href, icon, children, isActive }: NavLinkProps) {
       >
         {icon}
         <span>{children}</span>
-      </a>
+      </button>
     </Link>
   );
 }
