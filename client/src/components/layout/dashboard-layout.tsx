@@ -14,7 +14,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 interface NavLinkProps {
@@ -121,7 +121,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[280px,1fr]">

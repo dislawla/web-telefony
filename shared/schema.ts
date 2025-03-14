@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   companyName: text("company_name"),
   mttApiKey: text("mtt_api_key"),
   mttPhoneNumber: text("mtt_phone_number"),
+  amocrmDomain: text("amocrm_domain"),
+  amocrmAccessToken: text("amocrm_access_token"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -31,7 +33,7 @@ export const calls = pgTable("calls", {
   duration: integer("duration"),
   transcript: text("transcript"),
   recordingUrl: text("recording_url"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   aiSummary: json("ai_summary").$type<{
     sentiment: string;
     nextActions: string[];
@@ -45,6 +47,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   companyName: true,
   mttApiKey: true,
   mttPhoneNumber: true,
+  amocrmDomain: true,
+  amocrmAccessToken: true,
 });
 
 export const insertContactSchema = createInsertSchema(contacts).pick({

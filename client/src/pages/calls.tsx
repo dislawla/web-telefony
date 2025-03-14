@@ -41,6 +41,7 @@ import { Loader2, Phone, RefreshCcw } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Call, Contact, insertCallSchema } from "@shared/schema";
+import * as z from 'zod';
 
 function formatDuration(seconds: number | undefined) {
   if (!seconds) return "0:00";
@@ -126,8 +127,8 @@ export default function Calls() {
     },
   });
 
-  const initiateCall = useMutation({
-    mutationFn: async (data: typeof form.getValues()) => {
+  const initiateCall = useMutation<Call, Error, z.infer<typeof insertCallSchema>>({
+    mutationFn: async (data) => {
       const res = await apiRequest("POST", "/api/calls", data);
       return res.json();
     },
@@ -147,8 +148,8 @@ export default function Calls() {
     },
   });
 
-  const refreshCallStatus = useMutation({
-    mutationFn: async (callId: number) => {
+  const refreshCallStatus = useMutation<any, Error, number>({
+    mutationFn: async (callId) => {
       const res = await apiRequest("GET", `/api/calls/${callId}/status`);
       return res.json();
     },

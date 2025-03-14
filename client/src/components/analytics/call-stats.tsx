@@ -40,7 +40,8 @@ export function CallStats({ calls }: CallStatsProps) {
   const callsByDay = last7Days.map(date => ({
     date: date,
     calls: calls.filter(call => 
-      call.createdAt.toISOString().split('T')[0] === date
+      // added null check here
+      call.createdAt && call.createdAt.toISOString().split('T')[0] === date
     ).length
   }));
 

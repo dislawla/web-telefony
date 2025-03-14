@@ -1,16 +1,26 @@
 import axios from "axios";
 
-if (!process.env.AMOCRM_DOMAIN || !process.env.AMOCRM_ACCESS_TOKEN) {
-  throw new Error("Missing AmoCRM credentials");
-}
+// Temporarily disable credential check
+// if (!process.env.AMOCRM_DOMAIN || !process.env.AMOCRM_ACCESS_TOKEN) {
+//   throw new Error("Missing AmoCRM credentials");
+// }
 
-const api = axios.create({
-  baseURL: `https://${process.env.AMOCRM_DOMAIN}`,
-  headers: {
-    Authorization: `Bearer ${process.env.AMOCRM_ACCESS_TOKEN}`,
-    "Content-Type": "application/json"
+function getApi() {
+  const domain = process.env.AMOCRM_DOMAIN;
+  const token = process.env.AMOCRM_ACCESS_TOKEN;
+
+  if (!domain || !token) {
+    throw new Error("AmoCRM credentials not configured");
   }
-});
+
+  return axios.create({
+    baseURL: `https://${domain}`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+}
 
 export interface AmoCRMContact {
   id: number;
@@ -32,6 +42,7 @@ export async function createContact(contact: {
   email?: string;
 }): Promise<AmoCRMContact> {
   try {
+    const api = getApi();
     const response = await api.post("/api/v4/contacts", [{
       name: contact.name,
       custom_fields_values: [
@@ -53,7 +64,10 @@ export async function createContact(contact: {
       email: contact.email
     };
   } catch (error) {
-    throw new Error(`Failed to create AmoCRM contact: ${error.message}`);
+    if (error instanceof Error) {
+      throw new Error(`Не удалось создать контакт в AmoCRM: ${error.message}`);
+    }
+    throw error;
   }
 }
 
@@ -63,6 +77,7 @@ export async function createLead(data: {
   statusId: number;
 }): Promise<AmoCRMLead> {
   try {
+    const api = getApi();
     const response = await api.post("/api/v4/leads", [{
       name: data.name,
       status_id: data.statusId,
@@ -78,16 +93,23 @@ export async function createLead(data: {
       contact_id: data.contactId
     };
   } catch (error) {
-    throw new Error(`Failed to create AmoCRM lead: ${error.message}`);
+    if (error instanceof Error) {
+      throw new Error(`Не удалось создать сделку в AmoCRM: ${error.message}`);
+    }
+    throw error;
   }
 }
 
 export async function updateLeadStatus(leadId: number, statusId: number): Promise<void> {
   try {
+    const api = getApi();
     await api.patch(`/api/v4/leads/${leadId}`, {
       status_id: statusId
     });
   } catch (error) {
-    throw new Error(`Failed to update lead status: ${error.message}`);
+    if (error instanceof Error) {
+      throw new Error(`Не удалось обновить статус сделки: ${error.message}`);
+    }
+    throw error;
   }
 }

@@ -20,6 +20,11 @@ const mttSettingsSchema = z.object({
   mttPhoneNumber: z.string().min(1),
 });
 
+const crmSettingsSchema = z.object({
+  amocrmDomain: z.string().min(1),
+  amocrmAccessToken: z.string().min(1),
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
@@ -29,6 +34,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const settings = mttSettingsSchema.parse(req.body);
       await storage.updateUser(req.user!.id, settings);
       res.json({ message: "Настройки MTT успешно сохранены" });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Произошла неизвестная ошибка" });
+      }
+    }
+  });
+
+  // CRM Settings API
+  app.post("/api/settings/crm", requireAuth, async (req, res) => {
+    try {
+      const settings = crmSettingsSchema.parse(req.body);
+      await storage.updateUser(req.user!.id, settings);
+      res.json({ message: "Настройки CRM успешно сохранены" });
     } catch (error) {
       if (error instanceof Error) {
         res.status(400).json({ message: error.message });

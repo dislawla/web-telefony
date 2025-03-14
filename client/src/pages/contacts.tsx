@@ -33,6 +33,7 @@ import { Contact, insertContactSchema } from "@shared/schema";
 import { Plus, Loader2, Phone, Trash } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import * as z from 'zod';
 
 export default function Contacts() {
   const [open, setOpen] = useState(false);
@@ -52,8 +53,8 @@ export default function Contacts() {
     },
   });
 
-  const createContact = useMutation({
-    mutationFn: async (data: typeof form.getValues()) => {
+  const createContact = useMutation<Contact, Error, z.infer<typeof insertContactSchema>>({
+    mutationFn: async (data) => {
       const res = await apiRequest("POST", "/api/contacts", data);
       return res.json();
     },
@@ -75,8 +76,8 @@ export default function Contacts() {
     },
   });
 
-  const deleteContact = useMutation({
-    mutationFn: async (id: number) => {
+  const deleteContact = useMutation<void, Error, number>({
+    mutationFn: async (id) => {
       await apiRequest("DELETE", `/api/contacts/${id}`);
     },
     onSuccess: () => {
