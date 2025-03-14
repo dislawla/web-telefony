@@ -6,23 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function Profile() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
   const updateProfile = useMutation({
     mutationFn: async (data: { email: string; phone: string }) => {
-      const res = await apiRequest("PATCH", "/api/user", data);
-      return res.json();
+      const response = await apiRequest("PATCH", "/api/user", data);
+      if (!response.ok) {
+        throw new Error("Ошибка обновления профиля");
+      }
+      return response.json();
     },
     onSuccess: () => {
       setIsEditing(false);
+      queryClient.invalidateQueries(["/api/user"]);
       toast({
         title: "Профиль обновлен",
         description: "Ваши данные успешно сохранены",
