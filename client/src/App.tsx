@@ -14,6 +14,7 @@ import Profile from "@/pages/profile";
 import TelephonySettings from "@/pages/settings/telephony";
 import DatabaseSettings from "@/pages/settings/database";
 import CRMSettings from "@/pages/settings/crm";
+import Leads from "@/pages/leads";
 import { ProtectedRoute } from "@/components/protected-route";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <ProtectedRoute path="/contacts" component={Contacts} />
       <ProtectedRoute path="/calls" component={Calls} />
       <ProtectedRoute path="/messengers" component={Messengers} />
+      <ProtectedRoute path="/leads" component={Leads} />
       <ProtectedRoute path="/profile" component={Profile} />
       <ProtectedRoute path="/settings" component={Settings} />
       <ProtectedRoute path="/settings/telephony" component={TelephonySettings} />
