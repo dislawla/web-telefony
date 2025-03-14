@@ -44,29 +44,58 @@ export class DatabaseStorage implements IStorage {
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    try {
+      console.log('Getting user by id:', id);
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      console.log('Found user:', user);
+      return user;
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw error;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
+    try {
+      console.log('Getting user by username:', username);
+      const [user] = await db.select().from(users).where(eq(users.username, username));
+      console.log('Found user:', user);
+      return user;
+    } catch (error) {
+      console.error('Error getting user by username:', error);
+      throw error;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
-    return user;
+    try {
+      console.log('Creating user:', insertUser);
+      const [user] = await db.insert(users).values(insertUser).returning();
+      console.log('Created user:', user);
+      return user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
-    console.log('Updating user:', { id, updates });
-    const [user] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, id))
-      .returning();
-    console.log('Updated user:', user);
-    return user;
+    try {
+      console.log('Updating user:', { id, updates });
+      const [user] = await db
+        .update(users)
+        .set(updates)
+        .where(eq(users.id, id))
+        .returning();
+      console.log('Updated user:', user);
+      if (!user) {
+        throw new Error(`User with id ${id} not found`);
+      }
+      return user;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
   }
 
   // Contact operations

@@ -53,6 +53,16 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Добавляем отладочный middleware для проверки состояния сессии
+  app.use((req, res, next) => {
+    console.log('Auth check:', {
+      isAuthenticated: req.isAuthenticated(),
+      session: req.session,
+      user: req.user
+    });
+    next();
+  });
+
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
