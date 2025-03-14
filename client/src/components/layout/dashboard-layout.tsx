@@ -136,12 +136,12 @@ export default function DashboardLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="fixed top-4 left-4 lg:hidden"
+              className="fixed top-4 right-4 z-50 lg:hidden"
             >
               <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0">
+          <SheetContent side="right" className="p-0 w-[280px]">
             <Sidebar />
           </SheetContent>
         </Sheet>
