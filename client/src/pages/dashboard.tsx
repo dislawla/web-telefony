@@ -28,7 +28,7 @@ export default function Dashboard() {
       <DashboardLayout>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <h1 className="text-3xl font-bold">Главная</h1>
             <Skeleton className="h-10 w-32" />
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -48,11 +48,11 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">Главная</h1>
           <Link href="/contacts">
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Contact
+              Добавить контакт
             </Button>
           </Link>
         </div>
@@ -61,13 +61,13 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Contacts</CardTitle>
+            <CardTitle>Последние контакты</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentContacts.length === 0 ? (
                 <div className="text-center py-4 text-muted-foreground">
-                  No contacts yet. Add some to start making calls.
+                  Контактов пока нет. Добавьте контакты, чтобы начать звонки.
                 </div>
               ) : (
                 recentContacts.map((contact) => (
