@@ -73,7 +73,7 @@ function SettingsNavigation() {
 }
 
 // Компонент карточки раздела настроек
-function SettingsSectionCard({ section }) {
+function SettingsSectionCard({ section }: { section: typeof settingsSections[0] }) {
   return (
     <Card className="hover:bg-muted/50 transition-colors">
       <a href={section.href}>
