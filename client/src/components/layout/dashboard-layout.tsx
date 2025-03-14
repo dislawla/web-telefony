@@ -16,6 +16,11 @@ import {
 } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 interface NavLinkProps {
   href: string;
@@ -129,7 +134,7 @@ export default function DashboardLayout({
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[280px,1fr]">
+    <div className="min-h-screen">
       {isMobile ? (
         <>
           <Sheet>
@@ -148,12 +153,20 @@ export default function DashboardLayout({
           <main className="p-6">{children}</main>
         </>
       ) : (
-        <>
-          <aside className="hidden lg:block border-r">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel
+            defaultSize={20}
+            minSize={15}
+            maxSize={30}
+            className="border-r"
+          >
             <Sidebar />
-          </aside>
-          <main className="p-8">{children}</main>
-        </>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel>
+            <main className="p-8">{children}</main>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       )}
     </div>
   );
