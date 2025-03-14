@@ -12,6 +12,7 @@ import {
   Building,
   Database,
   MessageCircle,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,10 +80,18 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
+  ];
+
+  const messengerItems = [
     {
       href: "/messengers",
       icon: <MessageCircle className="h-4 w-4" />,
       label: "Мессенджеры",
+    },
+    {
+      href: "/leads",
+      icon: <UserPlus className="h-4 w-4" />,
+      label: "Лиды",
     },
   ];
 
@@ -125,6 +134,33 @@ function Navigation() {
             {item.label}
           </NavLink>
         ))}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors w-full text-left",
+                location.startsWith("/messengers") || location.startsWith("/leads")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-primary/10"
+              )}
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Мессенджеры и лиды</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" className="w-48">
+            {messengerItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <DropdownMenuItem className="cursor-pointer">
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </DropdownMenuItem>
+              </Link>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
