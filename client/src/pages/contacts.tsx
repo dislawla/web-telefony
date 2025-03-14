@@ -63,13 +63,13 @@ export default function Contacts() {
       setOpen(false);
       form.reset();
       toast({
-        title: "Contact created",
-        description: "The contact has been added successfully.",
+        title: "Контакт создан",
+        description: "Контакт успешно добавлен.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to create contact",
+        title: "Ошибка создания контакта",
         description: error.message,
         variant: "destructive",
       });
@@ -83,13 +83,13 @@ export default function Contacts() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
       toast({
-        title: "Contact deleted",
-        description: "The contact has been removed successfully.",
+        title: "Контакт удален",
+        description: "Контакт успешно удален.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to delete contact",
+        title: "Ошибка удаления контакта",
         description: error.message,
         variant: "destructive",
       });
@@ -100,17 +100,17 @@ export default function Contacts() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Contacts</h1>
+          <h1 className="text-3xl font-bold">Контакты</h1>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Contact
+                Добавить контакт
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Contact</DialogTitle>
+                <DialogTitle>Добавить новый контакт</DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form
@@ -122,7 +122,7 @@ export default function Contacts() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Имя</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -135,7 +135,7 @@ export default function Contacts() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Телефон</FormLabel>
                         <FormControl>
                           <Input {...field} type="tel" />
                         </FormControl>
@@ -161,7 +161,7 @@ export default function Contacts() {
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Notes</FormLabel>
+                        <FormLabel>Заметки</FormLabel>
                         <FormControl>
                           <Textarea {...field} />
                         </FormControl>
@@ -177,7 +177,7 @@ export default function Contacts() {
                     {createContact.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Add Contact"
+                      "Добавить контакт"
                     )}
                   </Button>
                 </form>
@@ -194,11 +194,11 @@ export default function Contacts() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
+                <TableHead>Имя</TableHead>
+                <TableHead>Телефон</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -227,7 +227,7 @@ export default function Contacts() {
               {contacts?.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    No contacts found. Add some to start making calls.
+                    Контактов пока нет. Добавьте контакты, чтобы начать звонки.
                   </TableCell>
                 </TableRow>
               )}

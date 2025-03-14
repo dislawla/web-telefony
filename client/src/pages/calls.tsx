@@ -55,7 +55,7 @@ function CallRecording({ url }: { url: string | undefined }) {
   return (
     <audio controls className="w-full max-w-xs">
       <source src={url} type="audio/mpeg" />
-      Your browser does not support the audio element.
+      Ваш браузер не поддерживает аудио элемент.
     </audio>
   );
 }
@@ -68,7 +68,14 @@ function CallStatus({ status }: { status: string }) {
     "no-answer": "warning",
   }[status] || "default";
 
-  return <Badge variant={variant}>{status}</Badge>;
+  const statusText = {
+    "in-progress": "В процессе",
+    "completed": "Завершен",
+    "failed": "Ошибка",
+    "no-answer": "Нет ответа",
+  }[status] || status;
+
+  return <Badge variant={variant}>{statusText}</Badge>;
 }
 
 function AIInsights({ call }: { call: Call }) {
@@ -77,15 +84,15 @@ function AIInsights({ call }: { call: Call }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Analysis</CardTitle>
+        <CardTitle>Анализ ИИ</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <div className="font-medium mb-1">Sentiment</div>
+          <div className="font-medium mb-1">Тональность</div>
           <div>{call.aiSummary.sentiment}</div>
         </div>
         <div>
-          <div className="font-medium mb-1">Next Actions</div>
+          <div className="font-medium mb-1">Следующие действия</div>
           <ul className="list-disc pl-4">
             {call.aiSummary.nextActions.map((action, i) => (
               <li key={i}>{action}</li>
@@ -93,7 +100,7 @@ function AIInsights({ call }: { call: Call }) {
           </ul>
         </div>
         <div>
-          <div className="font-medium mb-1">Keywords</div>
+          <div className="font-medium mb-1">Ключевые слова</div>
           <div className="flex flex-wrap gap-2">
             {call.aiSummary.keywords.map((keyword, i) => (
               <Badge key={i} variant="outline">{keyword}</Badge>
@@ -135,13 +142,13 @@ export default function Calls() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/calls"] });
       toast({
-        title: "Call initiated",
-        description: "The call has been started successfully.",
+        title: "Звонок начат",
+        description: "Звонок успешно инициирован.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to initiate call",
+        title: "Ошибка звонка",
         description: error.message,
         variant: "destructive",
       });
@@ -172,17 +179,17 @@ export default function Calls() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Calls</h1>
+          <h1 className="text-3xl font-bold">Звонки</h1>
           <Dialog>
             <DialogTrigger asChild>
               <Button>
                 <Phone className="h-4 w-4 mr-2" />
-                New Call
+                Новый звонок
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Start New Call</DialogTitle>
+                <DialogTitle>Начать новый звонок</DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form
@@ -194,14 +201,14 @@ export default function Calls() {
                     name="contactId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Contact</FormLabel>
+                        <FormLabel>Контакт</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a contact" />
+                              <SelectValue placeholder="Выберите контакт" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -227,7 +234,7 @@ export default function Calls() {
                     {initiateCall.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Start Call"
+                      "Начать звонок"
                     )}
                   </Button>
                 </form>
@@ -240,11 +247,11 @@ export default function Calls() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Контакт</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead>Длительность</TableHead>
+                <TableHead>Создан</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -257,7 +264,7 @@ export default function Calls() {
                     onClick={() => setSelectedCall(call)}
                   >
                     <TableCell className="font-medium">
-                      {contact?.name || "Unknown"}
+                      {contact?.name || "Неизвестно"}
                     </TableCell>
                     <TableCell>
                       <CallStatus status={call.status} />
@@ -285,7 +292,7 @@ export default function Calls() {
               {!calls?.length && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    No calls found. Start a new call to begin.
+                    Звонков пока нет. Начните новый звонок.
                   </TableCell>
                 </TableRow>
               )}
@@ -296,31 +303,31 @@ export default function Calls() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Call Details</CardTitle>
+                  <CardTitle>Детали звонка</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <div className="font-medium mb-1">Contact</div>
+                    <div className="font-medium mb-1">Контакт</div>
                     <div>
                       {contacts?.find((c) => c.id === selectedCall.contactId)
-                        ?.name || "Unknown"}
+                        ?.name || "Неизвестно"}
                     </div>
                   </div>
                   <div>
-                    <div className="font-medium mb-1">Status</div>
+                    <div className="font-medium mb-1">Статус</div>
                     <CallStatus status={selectedCall.status} />
                   </div>
                   <div>
-                    <div className="font-medium mb-1">Duration</div>
+                    <div className="font-medium mb-1">Длительность</div>
                     <div>{formatDuration(selectedCall.duration)}</div>
                   </div>
                   <div>
-                    <div className="font-medium mb-1">Recording</div>
+                    <div className="font-medium mb-1">Запись</div>
                     <CallRecording url={selectedCall.recordingUrl} />
                   </div>
                   {selectedCall.transcript && (
                     <div>
-                      <div className="font-medium mb-1">Transcript</div>
+                      <div className="font-medium mb-1">Транскрипция</div>
                       <div className="whitespace-pre-wrap text-sm">
                         {selectedCall.transcript}
                       </div>

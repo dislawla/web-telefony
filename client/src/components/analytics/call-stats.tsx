@@ -49,8 +49,8 @@ export function CallStats({ calls }: CallStatsProps) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader>
-          <CardTitle>Total Calls</CardTitle>
-          <CardDescription>All-time calls made</CardDescription>
+          <CardTitle>Всего звонков</CardTitle>
+          <CardDescription>За все время</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{calls.length}</div>
@@ -59,8 +59,8 @@ export function CallStats({ calls }: CallStatsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Success Rate</CardTitle>
-          <CardDescription>Completed calls percentage</CardDescription>
+          <CardTitle>Успешные звонки</CardTitle>
+          <CardDescription>Процент завершенных</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -71,20 +71,20 @@ export function CallStats({ calls }: CallStatsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Avg Duration</CardTitle>
-          <CardDescription>Average call length</CardDescription>
+          <CardTitle>Средняя длительность</CardTitle>
+          <CardDescription>Длительность звонка</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {Math.round(avgDuration)}s
+            {Math.round(avgDuration)}с
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Active Calls</CardTitle>
-          <CardDescription>Currently in progress</CardDescription>
+          <CardTitle>Активные звонки</CardTitle>
+          <CardDescription>В процессе</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -95,8 +95,8 @@ export function CallStats({ calls }: CallStatsProps) {
 
       <Card className="col-span-full">
         <CardHeader>
-          <CardTitle>Call Volume</CardTitle>
-          <CardDescription>Last 7 days of activity</CardDescription>
+          <CardTitle>Количество звонков</CardTitle>
+          <CardDescription>За последние 7 дней</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[200px]">
@@ -104,12 +104,12 @@ export function CallStats({ calls }: CallStatsProps) {
               <BarChart data={callsByDay}>
                 <XAxis
                   dataKey="date"
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { weekday: 'short' })}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('ru-RU', { weekday: 'short' })}
                 />
                 <YAxis />
                 <Tooltip
-                  formatter={(value: number) => [`${value} calls`, 'Volume']}
-                  labelFormatter={(label: string) => new Date(label).toLocaleDateString()}
+                  formatter={(value: number) => [`${value} звонков`, 'Количество']}
+                  labelFormatter={(label: string) => new Date(label).toLocaleDateString('ru-RU')}
                 />
                 <Bar
                   dataKey="calls"
