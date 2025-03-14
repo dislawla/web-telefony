@@ -131,27 +131,30 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[280px,1fr]">
       {isMobile ? (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="fixed top-4 right-4 z-50 lg:hidden"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="p-0 w-[280px]">
-            <Sidebar />
-          </SheetContent>
-        </Sheet>
+        <>
+          <Sheet>
+            <div className="flex items-center gap-4 px-6 py-4 border-b lg:hidden">
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <div className="font-semibold">AI Caller</div>
+            </div>
+            <SheetContent side="left" className="p-0 w-[280px]">
+              <Sidebar />
+            </SheetContent>
+          </Sheet>
+          <main className="p-6">{children}</main>
+        </>
       ) : (
-        <aside className="hidden lg:block border-r">
-          <Sidebar />
-        </aside>
+        <>
+          <aside className="hidden lg:block border-r">
+            <Sidebar />
+          </aside>
+          <main className="p-8">{children}</main>
+        </>
       )}
-
-      <main className="p-6 lg:p-8">{children}</main>
     </div>
   );
 }
