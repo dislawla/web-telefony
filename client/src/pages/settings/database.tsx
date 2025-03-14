@@ -148,7 +148,7 @@ export default function DatabaseSettings() {
                   )}
                 />
 
-                <Button type="submit" disabled={isConnecting}>
+                <Button type="submit" className="w-full" disabled={isConnecting}>
                   {isConnecting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
