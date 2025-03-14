@@ -49,22 +49,22 @@ function Navigation() {
     {
       href: "/",
       icon: <LayoutDashboard className="h-4 w-4" />,
-      label: "Dashboard",
+      label: "Главная",
     },
     {
       href: "/calls",
       icon: <Phone className="h-4 w-4" />,
-      label: "Calls",
+      label: "Звонки",
     },
     {
       href: "/contacts",
       icon: <Users className="h-4 w-4" />,
-      label: "Contacts",
+      label: "Контакты",
     },
     {
       href: "/settings",
       icon: <Settings className="h-4 w-4" />,
-      label: "Settings",
+      label: "Настройки",
     },
   ];
 
@@ -109,7 +109,7 @@ function Sidebar() {
           onClick={() => logoutMutation.mutate()}
         >
           <LogOut className="h-4 w-4 mr-2" />
-          Logout
+          Выйти
         </Button>
       </div>
     </div>

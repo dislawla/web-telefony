@@ -23,7 +23,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  
+
   const {
     data: user,
     error,
@@ -41,13 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Login successful",
-        description: `Welcome back, ${user.username}!`,
+        title: "Успешный вход",
+        description: `С возвращением, ${user.username}!`,
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Login failed",
+        title: "Ошибка входа",
         description: error.message,
         variant: "destructive",
       });
@@ -62,13 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Registration successful",
-        description: "Your account has been created.",
+        title: "Регистрация успешна",
+        description: "Ваш аккаунт создан.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Registration failed",
+        title: "Ошибка регистрации",
         description: error.message,
         variant: "destructive",
       });
@@ -82,13 +82,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
       toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
+        title: "Выход выполнен",
+        description: "Вы успешно вышли из системы.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Logout failed",
+        title: "Ошибка выхода",
         description: error.message,
         variant: "destructive",
       });

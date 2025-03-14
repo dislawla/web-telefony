@@ -52,28 +52,28 @@ export default function AuthPage() {
       <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Welcome to AI Caller</CardTitle>
+            <CardTitle>Добро пожаловать в AI Caller</CardTitle>
             <CardDescription>
-              Automate your sales calls with AI technology
+              Автоматизируйте ваши продажи с помощью ИИ-технологий
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
               <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="login">Вход</TabsTrigger>
+                <TabsTrigger value="register">Регистрация</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
                 <Form {...loginForm}>
                   <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))}>
                     <div className="space-y-4">
-                      <FormField
+                      <FormField 
                         control={loginForm.control}
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel>Имя пользователя</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -86,7 +86,7 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>Пароль</FormLabel>
                             <FormControl>
                               <Input type="password" {...field} />
                             </FormControl>
@@ -98,7 +98,7 @@ export default function AuthPage() {
                         {loginMutation.isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          "Login"
+                          "Войти"
                         )}
                       </Button>
                     </div>
@@ -115,7 +115,7 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel>Имя пользователя</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -128,7 +128,7 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>Пароль</FormLabel>
                             <FormControl>
                               <Input type="password" {...field} />
                             </FormControl>
@@ -141,7 +141,7 @@ export default function AuthPage() {
                         name="companyName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Company Name</FormLabel>
+                            <FormLabel>Название компании</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -153,7 +153,7 @@ export default function AuthPage() {
                         {registerMutation.isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          "Register"
+                          "Зарегистрироваться"
                         )}
                       </Button>
                     </div>
@@ -169,10 +169,10 @@ export default function AuthPage() {
         <div className="max-w-md mx-auto">
           <div className="mb-8">
             <Phone className="h-12 w-12 mb-4" />
-            <h1 className="text-4xl font-bold mb-4">AI-Powered Sales Calls</h1>
+            <h1 className="text-4xl font-bold mb-4">ИИ для продаж по телефону</h1>
             <p className="text-lg opacity-90">
-              Automate your outreach with intelligent voice AI that handles calls,
-              understands context, and integrates with your CRM.
+              Автоматизируйте ваши звонки с помощью интеллектуального голосового ИИ,
+              который понимает контекст и интегрируется с вашей CRM.
             </p>
           </div>
 
@@ -181,19 +181,19 @@ export default function AuthPage() {
               <div className="h-8 w-8 rounded-full bg-primary-foreground/10 flex items-center justify-center">
                 🎯
               </div>
-              <div className="flex-1">Smart lead qualification</div>
+              <div className="flex-1">Умная квалификация лидов</div>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary-foreground/10 flex items-center justify-center">
                 📊
               </div>
-              <div className="flex-1">Detailed analytics and insights</div>
+              <div className="flex-1">Подробная аналитика</div>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary-foreground/10 flex items-center justify-center">
                 🤖
               </div>
-              <div className="flex-1">GPT-4 powered conversations</div>
+              <div className="flex-1">Диалоги на базе GPT-4</div>
             </div>
           </div>
         </div>
