@@ -41,6 +41,8 @@ const leadSchema = z.object({
   name: z.string().min(1, "Имя обязательно"),
   source: z.string().min(1, "Укажите источник"),
   status: z.string().min(1, "Укажите статус"),
+  phone: z.string().optional(),
+  email: z.string().email("Введите корректный email").optional(),
   notes: z.string().optional(),
 });
 
@@ -54,7 +56,7 @@ export default function Leads() {
   const { toast } = useToast();
 
   const { data: leads, isLoading } = useQuery<Lead[]>({
-    queryKey: ["/api/leads"],
+    queryKey: ["/api/clients"],
   });
 
   const form = useForm({
@@ -63,17 +65,19 @@ export default function Leads() {
       name: "",
       source: "",
       status: "new",
+      phone: "",
+      email: "",
       notes: "",
     },
   });
 
   const createLead = useMutation({
     mutationFn: async (data: z.infer<typeof leadSchema>) => {
-      const res = await apiRequest("POST", "/api/leads", data);
+      const res = await apiRequest("POST", "/api/clients", data);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/leads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       setOpen(false);
       form.reset();
       toast({
@@ -81,10 +85,18 @@ export default function Leads() {
         description: "Новый лид успешно добавлен в систему.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      if (error.errors) {
+        error.errors.forEach((err: any) => {
+          form.setError(err.field as any, {
+            type: "manual",
+            message: err.message,
+          });
+        });
+      }
       toast({
         title: "Ошибка создания",
-        description: error.message,
+        description: error.message || "Произошла ошибка при создании лида",
         variant: "destructive",
       });
     },
@@ -92,10 +104,10 @@ export default function Leads() {
 
   const deleteLead = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/leads/${id}`);
+      await apiRequest("DELETE", `/api/clients/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/leads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       toast({
         title: "Лид удален",
         description: "Лид успешно удален из системы.",
@@ -152,6 +164,32 @@ export default function Leads() {
                   />
                   <FormField
                     control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Телефон</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Введите телефон" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Введите email" type="email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
@@ -197,6 +235,7 @@ export default function Leads() {
                   <TableHead>Имя</TableHead>
                   <TableHead>Источник</TableHead>
                   <TableHead>Статус</TableHead>
+                  <TableHead>Контакты</TableHead>
                   <TableHead>Дата создания</TableHead>
                   <TableHead className="text-right">Действия</TableHead>
                 </TableRow>
@@ -204,7 +243,7 @@ export default function Leads() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6">
+                    <TableCell colSpan={6} className="text-center py-6">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto" />
                     </TableCell>
                   </TableRow>
@@ -215,6 +254,12 @@ export default function Leads() {
                       <TableCell>{lead.source}</TableCell>
                       <TableCell>
                         <Badge>{lead.status}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          {lead.phone && <span className="text-sm">{lead.phone}</span>}
+                          {lead.email && <span className="text-sm text-muted-foreground">{lead.email}</span>}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {new Date(lead.createdAt).toLocaleDateString()}
@@ -237,7 +282,7 @@ export default function Leads() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6">
+                    <TableCell colSpan={6} className="text-center py-6">
                       <p className="text-muted-foreground">
                         Лидов пока нет. Создайте новый лид или настройте интеграцию с мессенджерами.
                       </p>

@@ -1,10 +1,10 @@
-import { InsertUser, User, Contact, InsertContact, Call, InsertCall } from "@shared/schema";
+import { InsertUser, User, Contact, InsertContact, Call, InsertCall, Client, InsertClient } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
-import { users, contacts, calls } from "@shared/schema";
+import { users, contacts, calls, clients } from "@shared/schema";
 
 const PostgresSessionStore = connectPg(session);
 
@@ -27,6 +27,13 @@ export interface IStorage {
   getCall(id: number): Promise<Call | undefined>;
   createCall(userId: number, call: InsertCall): Promise<Call>;
   updateCall(id: number, call: Partial<Call>): Promise<Call>;
+
+  // Client operations
+  getClients(userId: number): Promise<Client[]>;
+  getClient(id: number): Promise<Client | undefined>;
+  createClient(userId: number, client: InsertClient): Promise<Client>;
+  updateClient(id: number, client: Partial<Client>): Promise<Client>;
+  deleteClient(id: number): Promise<void>;
 
   // Session store
   sessionStore: session.Store;
@@ -154,6 +161,40 @@ export class DatabaseStorage implements IStorage {
       .where(eq(calls.id, id))
       .returning();
     return call;
+  }
+
+  // Client operations
+  async getClients(userId: number): Promise<Client[]> {
+    return db.select().from(clients).where(eq(clients.userId, userId));
+  }
+
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client;
+  }
+
+  async createClient(userId: number, insertClient: InsertClient): Promise<Client> {
+    const [client] = await db
+      .insert(clients)
+      .values({ ...insertClient, userId })
+      .returning();
+    return client;
+  }
+
+  async updateClient(id: number, updates: Partial<Client>): Promise<Client> {
+    const [client] = await db
+      .update(clients)
+      .set(updates)
+      .where(eq(clients.id, id))
+      .returning();
+    if (!client) {
+      throw new Error(`Client with id ${id} not found`);
+    }
+    return client;
+  }
+
+  async deleteClient(id: number): Promise<void> {
+    await db.delete(clients).where(eq(clients.id, id));
   }
 }
 

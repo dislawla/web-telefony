@@ -5,7 +5,7 @@ import { setupAuth } from "./auth";
 import { makeCall, getCallStatus, getRecording } from "./services/mtt";
 import { analyzeTranscript, generateResponse } from "./services/openai";
 import { createContact as createAmoCRMContact, createLead, updateLeadStatus } from "./services/amocrm";
-import { insertContactSchema, insertCallSchema } from "@shared/schema";
+import { insertContactSchema, insertCallSchema, insertClientSchema } from "@shared/schema";
 import { z } from "zod";
 
 function requireAuth(req: Request, res: Response, next: Function) {
@@ -197,6 +197,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ message: "Произошла неизвестная ошибка" });
       }
     }
+  });
+
+  // Clients API
+  app.get("/api/clients", requireAuth, async (req, res) => {
+    const clients = await storage.getClients(req.user!.id);
+    res.json(clients);
+  });
+
+  app.post("/api/clients", requireAuth, async (req, res) => {
+    try {
+      const clientData = insertClientSchema.parse(req.body);
+      const client = await storage.createClient(req.user!.id, clientData);
+      res.status(201).json(client);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          message: "Ошибка валидации",
+          errors: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+      } else if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Произошла неизвестная ошибка" });
+      }
+    }
+  });
+
+  app.patch("/api/clients/:id", requireAuth, async (req, res) => {
+    try {
+      const client = await storage.getClient(parseInt(req.params.id));
+      if (!client || client.userId !== req.user!.id) {
+        return res.status(404).json({ message: "Клиент не найден" });
+      }
+
+      const updates = insertClientSchema.partial().parse(req.body);
+      const updatedClient = await storage.updateClient(client.id, updates);
+      res.json(updatedClient);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          message: "Ошибка валидации",
+          errors: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+      } else if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Произошла неизвестная ошибка" });
+      }
+    }
+  });
+
+  app.delete("/api/clients/:id", requireAuth, async (req, res) => {
+    const client = await storage.getClient(parseInt(req.params.id));
+    if (!client || client.userId !== req.user!.id) {
+      return res.status(404).json({ message: "Клиент не найден" });
+    }
+
+    await storage.deleteClient(client.id);
+    res.status(204).send();
   });
 
   const httpServer = createServer(app);

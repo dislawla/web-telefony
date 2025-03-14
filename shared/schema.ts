@@ -2,6 +2,7 @@ import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzl
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Существующие таблицы остаются без изменений
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -43,6 +44,20 @@ export const calls = pgTable("calls", {
   }>(),
 });
 
+// Добавляем новую таблицу clients
+export const clients = pgTable("clients", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  source: text("source").notNull(),
+  status: text("status").notNull().default("new"),
+  phone: text("phone"),
+  email: text("email"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Существующие схемы insertUser, insertContact, insertCall
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -67,10 +82,22 @@ export const insertCallSchema = createInsertSchema(calls).pick({
   status: true,
 });
 
+// Добавляем схему для создания клиентов
+export const insertClientSchema = createInsertSchema(clients).pick({
+  name: true,
+  source: true,
+  status: true,
+  phone: true,
+  email: true,
+  notes: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type InsertCall = z.infer<typeof insertCallSchema>;
+export type InsertClient = z.infer<typeof insertClientSchema>;
 
 export type User = typeof users.$inferSelect;
 export type Contact = typeof contacts.$inferSelect;
 export type Call = typeof calls.$inferSelect;
+export type Client = typeof clients.$inferSelect;
