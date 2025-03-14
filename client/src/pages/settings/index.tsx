@@ -1,7 +1,5 @@
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Phone, Database, Building } from "lucide-react";
-import { useLocation } from "wouter";
-import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 // Данные о разделах настроек
@@ -47,31 +45,6 @@ const settingsSections = [
   }
 ];
 
-// Компонент навигации по настройкам
-function SettingsNavigation() {
-  const [location] = useLocation();
-
-  return (
-    <nav className="flex gap-2 border-b mb-6">
-      {settingsSections.map((section) => (
-        <a
-          key={section.href}
-          href={section.href}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 -mb-px border-b-2 transition-colors",
-            location === section.href
-              ? "border-primary text-primary"
-              : "border-transparent hover:border-border"
-          )}
-        >
-          {section.icon}
-          <span>{section.title}</span>
-        </a>
-      ))}
-    </nav>
-  );
-}
-
 // Компонент карточки раздела настроек
 function SettingsSectionCard({ section }: { section: typeof settingsSections[0] }) {
   return (
@@ -106,8 +79,6 @@ export default function Settings() {
             Управление настройками системы
           </p>
         </div>
-
-        <SettingsNavigation />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {settingsSections.map((section) => (
