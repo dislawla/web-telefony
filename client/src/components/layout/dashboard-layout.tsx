@@ -81,6 +81,11 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
+    {
+      href: "/crm",
+      icon: <Building className="h-4 w-4" />,
+      label: "CRM",
+    },
   ];
 
   const settingsItems = [
@@ -88,11 +93,6 @@ function Navigation() {
       href: "/settings",
       icon: <Phone className="h-4 w-4" />,
       label: "Телефония",
-    },
-    {
-      href: "/settings/crm",
-      icon: <Building className="h-4 w-4" />,
-      label: "CRM",
     },
     {
       href: "/settings/database",
