@@ -21,14 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -232,7 +224,10 @@ export default function Calls() {
                     disabled={initiateCall.isPending}
                   >
                     {initiateCall.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Сохранение...
+                      </>
                     ) : (
                       "Начать звонок"
                     )}
