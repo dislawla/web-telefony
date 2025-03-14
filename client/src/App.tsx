@@ -10,6 +10,7 @@ import Contacts from "@/pages/contacts";
 import Calls from "@/pages/calls";
 import Settings from "@/pages/settings";
 import DatabaseSettings from "@/pages/settings/database";
+import CRMSettings from "@/pages/settings/crm";
 import { ProtectedRoute } from "@/components/protected-route";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <ProtectedRoute path="/calls" component={Calls} />
       <ProtectedRoute path="/settings" component={Settings} />
       <ProtectedRoute path="/settings/database" component={DatabaseSettings} />
+      <ProtectedRoute path="/settings/crm" component={CRMSettings} />
       <Route component={NotFound} />
     </Switch>
   );
