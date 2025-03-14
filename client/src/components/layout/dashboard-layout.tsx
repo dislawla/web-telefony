@@ -69,18 +69,23 @@ function Navigation() {
   ];
 
   return (
-    <nav className="space-y-1">
-      {navItems.map((item) => (
-        <NavLink
-          key={item.href}
-          href={item.href}
-          icon={item.icon}
-          isActive={location === item.href}
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
+    <div>
+      <div className="mb-2 px-3 text-sm font-medium text-muted-foreground">
+        Навигация
+      </div>
+      <nav className="space-y-1">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            isActive={location === item.href}
+          >
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
   );
 }
 
