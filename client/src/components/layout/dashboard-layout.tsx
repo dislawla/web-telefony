@@ -25,9 +25,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -81,11 +78,6 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
-    {
-      href: "/crm",
-      icon: <Building className="h-4 w-4" />,
-      label: "CRM",
-    },
   ];
 
   const settingsItems = [
@@ -98,6 +90,11 @@ function Navigation() {
       href: "/settings/database",
       icon: <Database className="h-4 w-4" />,
       label: "База данных",
+    },
+    {
+      href: "/settings/crm",
+      icon: <Building className="h-4 w-4" />,
+      label: "CRM",
     },
   ];
 
