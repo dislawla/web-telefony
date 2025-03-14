@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
@@ -9,6 +9,12 @@ import { insertContactSchema, insertCallSchema } from "@shared/schema";
 import { z } from "zod";
 
 function requireAuth(req: Request, res: Response, next: Function) {
+  console.log('Auth check:', {
+    isAuthenticated: req.isAuthenticated(),
+    session: req.session,
+    user: req.user
+  });
+
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -26,11 +32,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User Profile Update API
   app.patch("/api/user", requireAuth, async (req, res) => {
     try {
+      console.log('Update user request:', {
+        userId: req.user?.id,
+        body: req.body
+      });
+
       const updates = userUpdateSchema.parse(req.body);
       const updatedUser = await storage.updateUser(req.user!.id, updates);
       const { password, ...safeUser } = updatedUser;
       res.json(safeUser);
     } catch (error) {
+      console.error('Update user error:', error);
       if (error instanceof Error) {
         res.status(400).json({ message: error.message });
       } else {
