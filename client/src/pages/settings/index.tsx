@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 const settingsSections = [
   {
     id: "telephony",
-    href: "/settings",
+    href: "/settings/telephony",
     icon: <Phone className="h-6 w-6" />,
     title: "Телефония",
     description: "Настройка параметров телефонии, включая API ключи, маршрутизацию звонков и интеграцию с ИИ",
