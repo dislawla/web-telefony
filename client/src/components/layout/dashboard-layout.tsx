@@ -9,6 +9,8 @@ import {
   LogOut,
   Menu,
   User,
+  Building,
+  Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +25,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -76,10 +81,23 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
+  ];
+
+  const settingsItems = [
     {
       href: "/settings",
-      icon: <Settings className="h-4 w-4" />,
-      label: "Настройки",
+      icon: <Phone className="h-4 w-4" />,
+      label: "Телефония",
+    },
+    {
+      href: "/settings/crm",
+      icon: <Building className="h-4 w-4" />,
+      label: "CRM",
+    },
+    {
+      href: "/settings/database",
+      icon: <Database className="h-4 w-4" />,
+      label: "База данных",
     },
   ];
 
@@ -99,6 +117,31 @@ function Navigation() {
             {item.label}
           </NavLink>
         ))}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors w-full text-left",
+                location.startsWith("/settings")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-primary/10"
+              )}
+            >
+              <Settings className="h-4 w-4" />
+              <span>Настройки</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" className="w-48">
+            {settingsItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <DropdownMenuItem className="cursor-pointer">
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </DropdownMenuItem>
+              </Link>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
     </div>
   );
