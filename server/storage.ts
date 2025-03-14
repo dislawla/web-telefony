@@ -1,8 +1,12 @@
 import { InsertUser, User, Contact, InsertContact, Call, InsertCall } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import session from "express-session";
-import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
+import { users, contacts, calls } from "@shared/schema";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User operations
@@ -28,130 +32,98 @@ export interface IStorage {
   sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private contacts: Map<number, Contact>;
-  private calls: Map<number, Call>;
-  private currentId: number;
+export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.contacts = new Map();
-    this.calls = new Map();
-    this.currentId = 1;
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000, // Prune expired entries every 24h
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
     });
   }
 
+  // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = {
-      ...insertUser,
-      id,
-      createdAt: new Date(),
-      mttApiKey: null,
-      mttPhoneNumber: null,
-    };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
-    const user = this.users.get(id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const updatedUser = { ...user, ...updates };
-    this.users.set(id, updatedUser);
-    return updatedUser;
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
   }
 
+  // Contact operations
   async getContacts(userId: number): Promise<Contact[]> {
-    return Array.from(this.contacts.values()).filter(
-      (contact) => contact.userId === userId,
-    );
+    return db.select().from(contacts).where(eq(contacts.userId, userId));
   }
 
   async getContact(id: number): Promise<Contact | undefined> {
-    return this.contacts.get(id);
+    const [contact] = await db.select().from(contacts).where(eq(contacts.id, id));
+    return contact;
   }
 
-  async createContact(userId: number, contact: InsertContact): Promise<Contact> {
-    const id = this.currentId++;
-    const newContact: Contact = {
-      ...contact,
-      id,
-      userId,
-      status: "new",
-      createdAt: new Date(),
-      email: contact.email || null,
-      notes: contact.notes || null,
-    };
-    this.contacts.set(id, newContact);
-    return newContact;
+  async createContact(userId: number, insertContact: InsertContact): Promise<Contact> {
+    const [contact] = await db
+      .insert(contacts)
+      .values({ ...insertContact, userId })
+      .returning();
+    return contact;
   }
 
   async updateContact(id: number, updates: Partial<Contact>): Promise<Contact> {
-    const contact = this.contacts.get(id);
-    if (!contact) {
-      throw new Error("Contact not found");
-    }
-    const updatedContact = { ...contact, ...updates };
-    this.contacts.set(id, updatedContact);
-    return updatedContact;
+    const [contact] = await db
+      .update(contacts)
+      .set(updates)
+      .where(eq(contacts.id, id))
+      .returning();
+    return contact;
   }
 
   async deleteContact(id: number): Promise<void> {
-    this.contacts.delete(id);
+    await db.delete(contacts).where(eq(contacts.id, id));
   }
 
+  // Call operations
   async getCalls(userId: number): Promise<Call[]> {
-    return Array.from(this.calls.values()).filter(
-      (call) => call.userId === userId,
-    );
+    return db.select().from(calls).where(eq(calls.userId, userId));
   }
 
   async getCall(id: number): Promise<Call | undefined> {
-    return this.calls.get(id);
+    const [call] = await db.select().from(calls).where(eq(calls.id, id));
+    return call;
   }
 
-  async createCall(userId: number, call: InsertCall): Promise<Call> {
-    const id = this.currentId++;
-    const newCall: Call = {
-      ...call,
-      id,
-      userId,
-      duration: 0,
-      transcript: null,
-      recordingUrl: null,
-      createdAt: new Date(),
-      aiSummary: null,
-    };
-    this.calls.set(id, newCall);
-    return newCall;
+  async createCall(userId: number, insertCall: InsertCall): Promise<Call> {
+    const [call] = await db
+      .insert(calls)
+      .values({ ...insertCall, userId })
+      .returning();
+    return call;
   }
 
   async updateCall(id: number, updates: Partial<Call>): Promise<Call> {
-    const call = this.calls.get(id);
-    if (!call) {
-      throw new Error("Call not found");
-    }
-    const updatedCall = { ...call, ...updates };
-    this.calls.set(id, updatedCall);
-    return updatedCall;
+    const [call] = await db
+      .update(calls)
+      .set(updates)
+      .where(eq(calls.id, id))
+      .returning();
+    return call;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
