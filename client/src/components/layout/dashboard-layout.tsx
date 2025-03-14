@@ -133,14 +133,11 @@ function UserMenu() {
 function Sidebar() {
   return (
     <div className="flex flex-col h-full p-4">
-      <div className="flex items-center gap-2 px-3 py-2 mb-4">
-        <Phone className="h-6 w-6" />
-        <span className="font-semibold">AI Caller</span>
+      <div className="mb-6">
+        <UserMenu />
       </div>
 
-      <UserMenu />
-
-      <div className="mt-6">
+      <div>
         <Navigation />
       </div>
     </div>
