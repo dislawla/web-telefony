@@ -22,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import DashboardLayout from "@/components/layout/dashboard-layout";
 
 // Схема валидации формы настроек телефонии
 const telephonyFormSchema = z.object({
@@ -84,215 +85,218 @@ export default function TelephonySettings() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Настройки телефонии</h1>
-        <p className="text-muted-foreground">
-          Управление настройками телефонной системы
-        </p>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Настройки телефонии</h1>
+          <p className="text-muted-foreground">
+            Управление настройками телефонной системы
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Блок API ключа */}
+            <Card>
+              <CardHeader>
+                <CardTitle>API ключ</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="apiKey"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>API ключ телефонии</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="password" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Блок настроек входящих звонков */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Входящие звонки</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Настройка маршрутизации звонков */}
+                <FormField
+                  control={form.control}
+                  name="incomingCalls.routing"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Маршрутизация звонков</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Выберите тип маршрутизации" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="sequential">
+                            Последовательная
+                          </SelectItem>
+                          <SelectItem value="parallel">
+                            Параллельная
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Настройка голосового приветствия */}
+                <FormField
+                  control={form.control}
+                  name="incomingCalls.greeting"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Голосовое приветствие</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Настройка времени ожидания */}
+                <FormField
+                  control={form.control}
+                  name="incomingCalls.waitTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Время ожидания (секунды)</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" min="0" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Блок настроек исходящих звонков */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Исходящие звонки</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Настройка номера телефона */}
+                <FormField
+                  control={form.control}
+                  name="outgoingCalls.phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Номер для исходящих</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="tel" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Настройка записи звонков */}
+                <FormField
+                  control={form.control}
+                  name="outgoingCalls.recordCalls"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Запись звонков</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Записывать все исходящие звонки
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Блок настроек интеграции с ИИ */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Интеграция с ИИ</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Настройка анализа разговоров */}
+                <FormField
+                  control={form.control}
+                  name="aiIntegration.analyzeConversations"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Анализ разговоров</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Анализировать разговоры с помощью ИИ
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Настройка транскрибации */}
+                <FormField
+                  control={form.control}
+                  name="aiIntegration.transcriptionEnabled"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Транскрибация</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Преобразовывать речь в текст
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Кнопка сохранения настроек */}
+            <Button type="submit" className="w-full">
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Сохранение...
+                </>
+              ) : (
+                "Сохранить настройки"
+              )}
+            </Button>
+          </form>
+        </Form>
       </div>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Блок API ключа */}
-        <Card>
-          <CardHeader>
-            <CardTitle>API ключ</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="apiKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>API ключ телефонии</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Блок настроек входящих звонков */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Входящие звонки</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Настройка маршрутизации звонков */}
-            <FormField
-              control={form.control}
-              name="incomingCalls.routing"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Маршрутизация звонков</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите тип маршрутизации" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="sequential">
-                        Последовательная
-                      </SelectItem>
-                      <SelectItem value="parallel">
-                        Параллельная
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Настройка голосового приветствия */}
-            <FormField
-              control={form.control}
-              name="incomingCalls.greeting"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Голосовое приветствие</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Настройка времени ожидания */}
-            <FormField
-              control={form.control}
-              name="incomingCalls.waitTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Время ожидания (секунды)</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="number" min="0" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Блок настроек исходящих звонков */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Исходящие звонки</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Настройка номера телефона */}
-            <FormField
-              control={form.control}
-              name="outgoingCalls.phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Номер для исходящих</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="tel" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Настройка записи звонков */}
-            <FormField
-              control={form.control}
-              name="outgoingCalls.recordCalls"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel>Запись звонков</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Записывать все исходящие звонки
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Блок настроек интеграции с ИИ */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Интеграция с ИИ</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Настройка анализа разговоров */}
-            <FormField
-              control={form.control}
-              name="aiIntegration.analyzeConversations"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel>Анализ разговоров</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Анализировать разговоры с помощью ИИ
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* Настройка транскрибации */}
-            <FormField
-              control={form.control}
-              name="aiIntegration.transcriptionEnabled"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel>Транскрибация</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Преобразовывать речь в текст
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Кнопка сохранения настроек */}
-        <Button type="submit" className="w-full">
-          {form.formState.isSubmitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              Сохранение...
-            </>
-          ) : (
-            "Сохранить настройки"
-          )}
-        </Button>
-      </form>
-    </Form>
-    </div>
+    </DashboardLayout>
   );
 }
