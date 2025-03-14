@@ -83,6 +83,11 @@ function Navigation() {
   const settingsItems = [
     {
       href: "/settings",
+      icon: <Settings className="h-4 w-4" />,
+      label: "Обзор настроек",
+    },
+    {
+      href: "/settings/telephony",
       icon: <Phone className="h-4 w-4" />,
       label: "Телефония",
     },
