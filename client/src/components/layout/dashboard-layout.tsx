@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -23,7 +24,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useState } from "react";
 
 interface NavLinkProps {
   href: string;
@@ -170,6 +170,7 @@ export default function DashboardLayout({
             defaultSize={20}
             minSize={isCollapsed ? 5 : 15}
             maxSize={30}
+            size={isCollapsed ? 5 : 20}
             className="border-r relative"
           >
             <Button
