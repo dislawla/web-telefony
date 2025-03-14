@@ -7,6 +7,8 @@ import {
   Settings,
   LogOut,
   Menu,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +23,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { useState } from "react";
 
 interface NavLinkProps {
   href: string;
@@ -94,32 +97,40 @@ function Navigation() {
   );
 }
 
-function Sidebar() {
+function Sidebar({ collapsed }: { collapsed?: boolean }) {
   const { user, logoutMutation } = useAuth();
 
   return (
     <div className="flex flex-col h-full p-4">
-      <div className="flex items-center gap-2 px-3 py-2 mb-8">
+      <div className={cn(
+        "flex items-center gap-2 px-3 py-2 mb-8",
+        collapsed && "justify-center"
+      )}>
         <Phone className="h-6 w-6" />
-        <span className="font-semibold">AI Caller</span>
+        {!collapsed && <span className="font-semibold">AI Caller</span>}
       </div>
 
       <Navigation />
 
       <div className="mt-auto pt-4 border-t">
-        <div className="px-3 py-2 mb-2">
-          <div className="font-medium">{user?.username}</div>
-          <div className="text-sm text-muted-foreground">
-            {user?.companyName}
+        {!collapsed && (
+          <div className="px-3 py-2 mb-2">
+            <div className="font-medium">{user?.username}</div>
+            <div className="text-sm text-muted-foreground">
+              {user?.companyName}
+            </div>
           </div>
-        </div>
+        )}
         <Button
           variant="ghost"
-          className="w-full justify-start"
+          className={cn(
+            "w-full",
+            collapsed ? "justify-center" : "justify-start"
+          )}
           onClick={() => logoutMutation.mutate()}
         >
-          <LogOut className="h-4 w-4 mr-2" />
-          Выйти
+          <LogOut className="h-4 w-4" />
+          {!collapsed && <span className="ml-2">Выйти</span>}
         </Button>
       </div>
     </div>
@@ -132,6 +143,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const isMobile = useIsMobile();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -156,11 +168,23 @@ export default function DashboardLayout({
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             defaultSize={20}
-            minSize={15}
+            minSize={isCollapsed ? 5 : 15}
             maxSize={30}
-            className="border-r"
+            className="border-r relative"
           >
-            <Sidebar />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-[-12px] top-4 z-10"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+            <Sidebar collapsed={isCollapsed} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
