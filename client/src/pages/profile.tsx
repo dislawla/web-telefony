@@ -16,13 +16,11 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const updateProfile = useMutation({
     mutationFn: async (data: { email: string; phone: string }) => {
       const response = await apiRequest("PATCH", "/api/user", data);
-      if (!response.ok) {
-        throw new Error("Ошибка обновления профиля");
-      }
       return response.json();
     },
     onSuccess: () => {
@@ -32,11 +30,19 @@ export default function Profile() {
         title: "Профиль обновлен",
         description: "Ваши данные успешно сохранены",
       });
+      setErrors({});
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      if (error.errors) {
+        const fieldErrors = error.errors.reduce((acc: any, err: any) => {
+          acc[err.field] = err.message;
+          return acc;
+        }, {});
+        setErrors(fieldErrors);
+      }
       toast({
         title: "Ошибка обновления",
-        description: error.message,
+        description: error.message || "Произошла ошибка при обновлении профиля",
         variant: "destructive",
       });
     },
@@ -94,11 +100,17 @@ export default function Profile() {
                   Email
                 </div>
                 {isEditing ? (
-                  <Input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Введите email"
-                  />
+                  <div>
+                    <Input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Введите email"
+                      className={errors.email ? "border-red-500" : ""}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                    )}
+                  </div>
                 ) : (
                   <div className="text-lg">{user?.email || "Не указан"}</div>
                 )}
@@ -109,11 +121,17 @@ export default function Profile() {
                   Телефон
                 </div>
                 {isEditing ? (
-                  <Input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Введите телефон"
-                  />
+                  <div>
+                    <Input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Введите телефон"
+                      className={errors.phone ? "border-red-500" : ""}
+                    />
+                    {errors.phone && (
+                      <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
+                    )}
+                  </div>
                 ) : (
                   <div className="text-lg">{user?.phone || "Не указан"}</div>
                 )}
@@ -143,6 +161,7 @@ export default function Profile() {
                     setIsEditing(false);
                     setEmail(user?.email || "");
                     setPhone(user?.phone || "");
+                    setErrors({});
                   }}
                 >
                   Отмена

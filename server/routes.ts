@@ -22,8 +22,14 @@ function requireAuth(req: Request, res: Response, next: Function) {
 }
 
 const userUpdateSchema = z.object({
-  email: z.string().email("Неверный формат email").optional(),
-  phone: z.string().optional(),
+  email: z.string()
+    .email("Некорректный формат email адреса. Пример: user@example.com")
+    .min(1, "Email не может быть пустым")
+    .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Неверный формат email адреса")
+    .optional(),
+  phone: z.string()
+    .regex(/^\+?[0-9]{10,}$/, "Неверный формат номера телефона. Используйте только цифры и '+' в начале")
+    .optional(),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -43,7 +49,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(safeUser);
     } catch (error) {
       console.error('Update user error:', error);
-      if (error instanceof Error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          message: "Ошибка валидации",
+          errors: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+      } else if (error instanceof Error) {
         res.status(400).json({ message: error.message });
       } else {
         res.status(500).json({ message: "Произошла неизвестная ошибка" });
