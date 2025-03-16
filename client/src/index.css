@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: hsl(222, 28%, 30%);
+    --background: hsl(222, 26%, 20%);
   }
 
   * {
