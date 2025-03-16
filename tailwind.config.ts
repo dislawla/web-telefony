@@ -14,7 +14,7 @@ export default {
         background: "hsl(222, 26%, 20%)",
         foreground: "hsl(var(--foreground))",
         card: {
-          DEFAULT: "hsl(222, 57%, 32%)",
+          DEFAULT: "hsl(222, 20%, 28%)",
           foreground: "hsl(var(--card-foreground))",
         },
         popover: {
