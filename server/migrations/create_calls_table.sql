@@ -1,0 +1,8 @@
+CREATE TABLE calls (
+    id SERIAL PRIMARY KEY,
+    caller VARCHAR(255) NOT NULL,
+    callee VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    duration INTEGER NOT NULL,
+    status VARCHAR(50) NOT NULL
+);

@@ -1,0 +1,4 @@
+ALTER TABLE calls
+ADD COLUMN recording_url TEXT,
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+ADD COLUMN ai_summary JSON;

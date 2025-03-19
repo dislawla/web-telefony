@@ -1,12 +1,21 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import setupRoutes from "./routes/index";
 import { setupVite, serveStatic, log } from "./vite";
+import http from "http";
+
 
 const app = express();
+const PORT = Number(process.env.PORT) || 3000; // Убедитесь, что установлен правильный порт
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Enable CORS for development
+// Настраиваем маршруты через функцию setupRoutes
+import { setupAuth } from "./auth"; // Импорт setupAuth
+setupAuth(app); // Добавляем настройку аутентификации перед маршрутами
+setupRoutes(app);
+
+// Включить CORS для разработки
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -50,29 +59,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware для обработки ошибок
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+});
+
+// Создаем HTTP-сервер на основе Express-приложения
+const server = http.createServer(app);
+
 (async () => {
-  const server = await registerRoutes(app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    console.error(err);
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-  });
-
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  server.listen(PORT, "127.0.0.1", () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
   });
 })();

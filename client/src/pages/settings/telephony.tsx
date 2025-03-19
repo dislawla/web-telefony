@@ -24,6 +24,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 
+// import buttons 
+
+
 // Схема валидации формы настроек телефонии
 const telephonyFormSchema = z.object({
   apiKey: z.string().min(1, "API ключ обязателен"),
@@ -70,10 +73,21 @@ export default function TelephonySettings() {
 
   async function onSubmit(data: TelephonyFormValues) {
     try {
-      // Здесь будет логика сохранения настроек в базу данных
+      const response = await fetch("/api/telephony", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) throw new Error(result.message);
+  
       toast({
         title: "Настройки сохранены",
-        description: "Настройки телефонии успешно обновлены",
+        description: result.message,
       });
     } catch (error) {
       toast({
@@ -83,6 +97,9 @@ export default function TelephonySettings() {
       });
     }
   }
+  
+
+
 
   return (
     <DashboardLayout>

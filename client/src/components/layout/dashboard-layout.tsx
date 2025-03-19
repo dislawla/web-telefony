@@ -80,6 +80,11 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
+    {
+      href: "/ai",
+      icon: <Database className="h-4 w-4" />,
+      label: "AI",
+    },
   ];
 
   const messengerItems = [

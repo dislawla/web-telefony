@@ -1,15 +1,45 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
-import * as schema from "@shared/schema";
+import dotenv from 'dotenv';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import * as schema from '@shared/schema';
 
-neonConfig.webSocketConstructor = ws;
+const result = dotenv.config();
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
+if (result.error) {
+  throw result.error;
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+console.log('Loaded env file:', result.parsed);
+
+console.log('Environment Variables:', process.env);
+
+const databaseUrl = process.env.DATABASE_URL;
+
+console.log('DATABASE URL:', databaseUrl);
+
+if (!databaseUrl) {
+  throw new Error('DATABASE URL must be set. Did you forget to provision a database?');
+}
+
+let pool: pg.Pool;
+
+async function createPool() {
+  pool = new pg.Pool({
+    connectionString: databaseUrl,
+  });
+  return pool;
+}
+
+export async function getPool() {
+  if (!pool) {
+    await createPool();
+  }
+  return pool;
+}
+
+// Создаем асинхронную функцию и вызываем ее немедленно
+async function initializeDb() {
+  return drizzle(await getPool(), { schema: schema });
+}
+
+export const db = await initializeDb();
