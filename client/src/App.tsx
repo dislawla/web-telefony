@@ -16,6 +16,9 @@ import DatabaseSettings from "@/pages/settings/database";
 import CRMSettings from "@/pages/settings/crm";
 import Leads from "@/pages/leads";
 import { ProtectedRoute } from "@/components/protected-route";
+import AIPage from "@/pages/AI chat/ai";
+import GoogleGeminiPage from "@/pages/AI chat/google-gemini";
+import ChatGptPage from "@/pages/AI chat/chat-gpt";
 
 function Router() {
   return (
@@ -31,6 +34,9 @@ function Router() {
       <ProtectedRoute path="/settings/telephony" component={TelephonySettings} />
       <ProtectedRoute path="/settings/database" component={DatabaseSettings} />
       <ProtectedRoute path="/settings/crm" component={CRMSettings} />
+      <ProtectedRoute path="/ai" component={AIPage} /> {/* Ensure this route is correct */}
+      <ProtectedRoute path="/ai/google-gemini" component={GoogleGeminiPage} />
+      <ProtectedRoute path="/ai/chat-gpt" component={ChatGptPage} />
       <Route component={NotFound} />
     </Switch>
   );
