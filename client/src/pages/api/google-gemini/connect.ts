@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   // Используем переменные окружения для параметров проекта Gemini
-  const projectId = process.env.GOOGLE_GEMINI_PROJECT_ID || 'loyal-framework-454512-t4';
+  const projectId = process.env.GOOGLE_GEMINI_PROJECT_ID || '';
   const location = process.env.GOOGLE_GEMINI_LOCATION || 'us-central1';
   const agentId = process.env.GOOGLE_GEMINI_AGENT_ID || 'YOUR_AGENT_ID';
 

@@ -80,10 +80,18 @@ function Navigation() {
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
     },
+  ];
+
+  const aiSubItems = [
     {
-      href: "/ai",
+      href: "/ai/chat-gpt",
+      icon: <MessageCircle className="h-4 w-4" />,
+      label: "Chat GPT",
+    },
+    {
+      href: "/ai/google-gemini",
       icon: <Database className="h-4 w-4" />,
-      label: "AI",
+      label: "Google Gemini",
     },
   ];
 
@@ -139,6 +147,33 @@ function Navigation() {
             {item.label}
           </NavLink>
         ))}
+
+        {/* Выпадающее меню для AI с двумя подпунктами */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors w-full text-left",
+                location.startsWith("/ai")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-primary/10"
+              )}
+            >
+              <Database className="h-4 w-4" />
+              <span>AI</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" className="w-56">
+            {aiSubItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <DropdownMenuItem className="cursor-pointer">
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </DropdownMenuItem>
+              </Link>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
