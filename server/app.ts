@@ -1,11 +1,20 @@
 import express from "express";
+import cors from "cors";
 import { askChatGPT } from "./api/askChatGPT";
 
 const app = express();
-app.use(express.json()); // для парсинга JSON-тел запросов
+
+// Middleware для CORS (Cross-Origin Resource Sharing)
+app.use(cors());
+
+// Middleware для парсинга JSON тел запросов
+app.use(express.json());
 
 app.post("/api/ask", async (req, res) => {
   const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ message: "Нет запроса" });
+  }
   try {
     const reply = await askChatGPT(prompt);
     res.json({ reply });

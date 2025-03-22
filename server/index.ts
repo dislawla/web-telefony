@@ -1,7 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { type Request, Response, NextFunction } from "express";
 import setupRoutes from "./routes/index";
 import { setupVite, serveStatic, log } from "./vite";
 import http from "http";
+import { askChatGPT } from "./api/askChatGPT";
 
 
 const app = express();
@@ -14,6 +18,22 @@ app.use(express.urlencoded({ extended: false }));
 import { setupAuth } from "./auth"; // Импорт setupAuth
 setupAuth(app); // Добавляем настройку аутентификации перед маршрутами
 setupRoutes(app);
+
+// Обработчик маршрута /api/ask
+app.post("/api/ask", async (req: Request, res: Response) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ message: "Нет запроса" });
+  }
+  try {
+    const reply = await askChatGPT(prompt);
+    res.json({ reply });
+  } catch (error: any) {
+    // Вывод подробных данных об ошибке в консоль
+    console.error("Ошибка запроса к OpenAI:", error?.response?.data || error.message);
+    res.status(500).json({ message: "Ошибка связи с ChatGPT" });
+  }
+});
 
 // Включить CORS для разработки
 app.use((req, res, next) => {

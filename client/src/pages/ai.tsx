@@ -28,11 +28,12 @@ const AIPage = () => {
 
   const submitQuery = useMutation<unknown, Error, FormValues>({
     mutationFn: async (data) => {
-      const res = await apiRequest("POST", "/api/chatgpt", data);
+      const payload = { ...data, userId: 1 }; // Replace 1 with the actual user ID if available
+      const res = await apiRequest("POST", "/api/ai/ask", payload);
       return res.json();
     },
     onSuccess: (result: any) => {
-      setResponse(result.answer || "Error: No response received");
+      setResponse(result.response || "Error: No response received");
       toast({
         title: "Query Processed",
         description: "Your query has been successfully processed.",

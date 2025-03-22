@@ -21,6 +21,16 @@ if (!databaseUrl) {
   throw new Error('DATABASE URL must be set. Did you forget to provision a database?');
 }
 
+import { Pool } from "pg";
+
+export const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: parseInt(process.env.DB_PORT || "5432", 10),
+});
+
 let pool: pg.Pool;
 
 async function createPool() {
