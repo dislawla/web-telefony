@@ -36,7 +36,11 @@ const ChatGPT: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    // Здесь можно использовать selectedSession для логики сохра��ения сообщения в сессию
+    // Проверяем, что сообщение не пустое
+    if (!message.trim()) {
+      return;
+    }
+
     try {
       const result = await apiRequest("POST", "/api/ai/ask", { message, sessionId: selectedSession });
       setResponseText(result.answer);
