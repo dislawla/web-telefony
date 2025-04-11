@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { BackButton } from "@/components/ui/back-button";
 
 const crmSettingsSchema = z.object({
   domain: z.string().min(1, "Введите домен CRM"),
@@ -59,10 +60,11 @@ export default function CRMSettings() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <BackButton />
         <div>
           <h1 className="text-3xl font-bold">Настройки CRM</h1>
           <p className="text-muted-foreground">
-            Управление интеграцией с CRM системой
+            Настройка интеграции с CRM системой
           </p>
         </div>
 

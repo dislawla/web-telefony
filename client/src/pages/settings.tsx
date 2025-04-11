@@ -2,6 +2,7 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Phone, Database, Building } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Link } from "wouter";
+import { BackButton } from "@/components/ui/back-button";
 
 const settingsSections = [
   {
@@ -72,10 +73,11 @@ export default function Settings() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <BackButton />
         <div>
           <h1 className="text-3xl font-bold">Настройки</h1>
           <p className="text-muted-foreground">
-            Управление настройками системы
+            Настройки вашего аккаунта
           </p>
         </div>
 

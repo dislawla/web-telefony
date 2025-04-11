@@ -23,6 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
+import { BackButton } from "@/components/ui/back-button";
 
 // import buttons 
 
@@ -104,10 +105,11 @@ export default function TelephonySettings() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <BackButton />
         <div>
           <h1 className="text-3xl font-bold">Настройки телефонии</h1>
           <p className="text-muted-foreground">
-            Управление настройками телефонной системы
+            Настройка параметров телефонии
           </p>
         </div>
 

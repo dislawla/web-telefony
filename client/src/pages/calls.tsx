@@ -42,6 +42,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Call, Contact, insertCallSchema } from "@shared/schema";
 import * as z from 'zod';
+import { BackButton } from "@/components/ui/back-button";
 
 function formatDuration(seconds: number | undefined) {
   if (!seconds) return "0:00";
@@ -178,6 +179,7 @@ export default function Calls() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <BackButton />
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Звонки</h1>
           <Dialog>

@@ -13,30 +13,27 @@ console.log('Loaded env file:', result.parsed);
 
 console.log('Environment Variables:', process.env);
 
-const databaseUrl = process.env.DATABASE_URL;
-
-console.log('DATABASE URL:', databaseUrl);
-
-if (!databaseUrl) {
-  throw new Error('DATABASE URL must be set. Did you forget to provision a database?');
-}
-
-import { Pool } from "pg";
-
-export const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: parseInt(process.env.DB_PORT || "5432", 10),
-});
-
 let pool: pg.Pool;
 
 async function createPool() {
-  pool = new pg.Pool({
-    connectionString: databaseUrl,
-  });
+  // Предпочитаем использовать DATABASE_URL, если он задан
+  const databaseUrl = process.env.DATABASE_URL;
+  
+  if (databaseUrl) {
+    pool = new pg.Pool({
+      connectionString: databaseUrl,
+    });
+  } else {
+    // Используем отдельные параметры подключения, если URL не задан
+    pool = new pg.Pool({
+      user: process.env.DB_USER,
+      host: process.env.DB_HOST,
+      database: process.env.DB_NAME,
+      password: process.env.DB_PASSWORD,
+      port: parseInt(process.env.DB_PORT || "5432", 10),
+    });
+  }
+  
   return pool;
 }
 

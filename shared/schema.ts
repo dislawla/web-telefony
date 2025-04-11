@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   companyName: text("company_name"),
   email: text("email"),
   phone: text("phone"),
+  avatar_url: text("avatar_url"),
   mttApiKey: text("mtt_api_key"),
   mttPhoneNumber: text("mtt_phone_number"),
   amocrmDomain: text("amocrm_domain"),

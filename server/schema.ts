@@ -2,8 +2,13 @@ import { pgTable, serial, integer, varchar, boolean, text, timestamp } from "dri
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').unique().notNull(),
+  username: text('username').notNull().unique(),
+  password: text('password').notNull(),
+  companyName: text('company_name').notNull(),
+  email: text('email').unique(),
+  phone: text('phone'),
+  name: text('name'),
+  avatar_url: text('avatar_url'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

@@ -6,6 +6,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
+import type { User } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -66,7 +67,7 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        console.log(`Attempting login for: ${username}`); // Логируем попытку логина
+        console.log(`Attempting login for: ${username}`);
         const user = await storage.getUserByUsername(username);
         if (!user) {
           console.log("User not found");
@@ -74,7 +75,7 @@ export function setupAuth(app: Express) {
         }
   
         const passwordMatch = await comparePasswords(password, user.password);
-        console.log(`Password match: ${passwordMatch}`); // Проверяем пароль
+        console.log(`Password match: ${passwordMatch}`);
   
         if (!passwordMatch) {
           return done(null, false, { message: "Invalid username or password" });
@@ -87,7 +88,8 @@ export function setupAuth(app: Express) {
       }
     })
   );
-  passport.serializeUser((user, done) => done(null, user.id));
+
+  passport.serializeUser((user: User, done) => done(null, user.id));
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
@@ -97,10 +99,66 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Добавляем обработчик регистрации
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, password, companyName } = req.body;
+
+      console.log("Registration attempt:", { username, companyName }); // Добавляем логирование
+
+      // Проверяем, что все необходимые поля присутствуют
+      if (!username || !password || !companyName) {
+        return res.status(400).json({
+          message: "Все поля обязательны для заполнения"
+        });
+      }
+
+      // Проверяем, не существует ли уже пользователь с таким именем
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({
+          message: "Пользователь с таким именем уже существует"
+        });
+      }
+
+      // Хешируем пароль
+      const hashedPassword = await hashPassword(password);
+
+      // Создаем нового пользователя
+      const newUser = await storage.createUser({
+        username,
+        password: hashedPassword,
+        companyName
+      });
+
+      console.log("User created:", newUser); // Добавляем логирование
+
+      // Автоматически логиним пользователя после регистрации
+      req.login(newUser, (err) => {
+        if (err) {
+          console.error("Login error after registration:", err);
+          return res.status(500).json({
+            message: "Ошибка при автоматическом входе после регистрации"
+          });
+        }
+
+        // Отправляем данные пользователя без пароля
+        const { password, ...safeUser } = newUser;
+        res.status(201).json(safeUser);
+      });
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({
+        message: "Ошибка при регистрации пользователя"
+      });
+    }
+  });
+
   app.post("/api/auth/login", (req, res, next) => {
-    console.log("POST /api/auth/login - Request Body:", req.body); // Лог входящего запроса
+    console.log("POST /api/auth/login - Request Body:", req.body);
   
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: any, user: User | false, info: { message: string } | undefined) => {
       if (err) {
         console.error("Authentication error:", err);
         return next(err);
@@ -116,7 +174,7 @@ export function setupAuth(app: Express) {
         }
         console.log("User authenticated:", user);
         const { password, ...safeUser } = user;
-        res.json(safeUser); // Отправляем JSON-ответ
+        res.json(safeUser);
       });
     })(req, res, next);
   });

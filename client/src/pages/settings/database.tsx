@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 
 const databaseFormSchema = z.object({
   host: z.string().min(1, "Укажите хост базы данных"),
@@ -64,6 +65,7 @@ export default function DatabaseSettings() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <BackButton />
         <div>
           <h1 className="text-3xl font-bold">Настройки базы данных</h1>
           <p className="text-muted-foreground">

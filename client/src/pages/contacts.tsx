@@ -34,6 +34,7 @@ import { Plus, Loader2, Phone, Trash } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import * as z from 'zod';
+import { BackButton } from "@/components/ui/back-button";
 
 export default function Contacts() {
   const [open, setOpen] = useState(false);
@@ -99,8 +100,14 @@ export default function Contacts() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <BackButton />
+        <div>
           <h1 className="text-3xl font-bold">Контакты</h1>
+          <p className="text-muted-foreground">
+            Управление вашими контактами
+          </p>
+        </div>
+        <div className="flex items-center justify-between">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>

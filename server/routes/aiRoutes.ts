@@ -1,6 +1,6 @@
 import { Router } from "express";
 import OpenAI from "openai";
-import { pool } from "../db"; // Import database connection
+import { getPool } from "../db"; // Import getPool function instead of pool
 
 const router = Router();
 
@@ -11,6 +11,7 @@ const openai = new OpenAI({
 router.post("/ask", async (req, res) => {
   try {
     const { message, sessionId } = req.body;
+    const pool = await getPool(); // Get pool instance
 
     if (!message || !sessionId) {
       return res.status(400).json({ message: "Отсутствует сообщение или идентификатор сессии" });
@@ -53,8 +54,8 @@ router.post("/ask", async (req, res) => {
     );
 
     res.json({ reply: assistantMessage });
-  } catch (error) {
-    console.error("ChatGPT Error:", error?.response?.data || error.message);
+  } catch (error: any) {
+    console.error("ChatGPT Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Ошибка при обращении к OpenAI или сохранении сообщения" });
   }
 });
