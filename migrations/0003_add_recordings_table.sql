@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS recordings (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  call_id INTEGER NOT NULL,
+  file_path TEXT NOT NULL,
+  file_name TEXT NOT NULL,
+  duration INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+); 

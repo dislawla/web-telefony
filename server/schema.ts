@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, boolean, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, varchar, boolean, text, timestamp, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -9,6 +9,8 @@ export const users = pgTable('users', {
   phone: text('phone'),
   name: text('name'),
   avatar_url: text('avatar_url'),
+  avatar_position: jsonb('avatar_position'),
+  avatar_size: integer('avatar_size'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

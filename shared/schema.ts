@@ -58,6 +58,17 @@ export const clients = pgTable("clients", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const recordings = pgTable("recordings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  callId: integer("call_id").notNull(),
+  filePath: text("file_path").notNull(),
+  fileName: text("file_name").notNull(),
+  duration: integer("duration").notNull().default(0),
+  transcription: text("transcription"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Существующие схемы insertUser, insertContact, insertCall
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,

@@ -8,179 +8,210 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
+import { AvatarEdit } from "@/components/ui/avatar-edit";
 
 export default function Profile() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, setUser } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoadingAvatar, setIsLoadingAvatar] = useState(false);
 
   const updateProfile = useMutation({
     mutationFn: async (data: { email: string; phone: string }) => {
-      const response = await apiRequest("PATCH", "/api/user", data);
-      return response.json();
+      const res = await apiRequest("PUT", "/api/auth/user", data);
+      return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setUser(data);
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Профиль обновлен",
         description: "Ваши данные успешно сохранены",
       });
-      setErrors({});
     },
-    onError: (error: any) => {
-      if (error.errors) {
-        const fieldErrors = error.errors.reduce((acc: any, err: any) => {
-          acc[err.field] = err.message;
-          return acc;
-        }, {});
-        setErrors(fieldErrors);
-      }
+    onError: (error: Error) => {
       toast({
-        title: "Ошибка обновления",
-        description: error.message || "Произошла ошибка при обновлении профиля",
+        title: "Ошибка",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      setIsLoadingAvatar(true);
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload avatar");
+      }
+
+      const data = await response.json();
+      setUser({ ...user!, avatar_url: data.url });
+      toast({
+        title: "Аватар обновлен",
+        description: "Ваш аватар успешно загружен",
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить аватар",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingAvatar(false);
+    }
+  };
+
+  const handleAvatarEditComplete = async (croppedImage: Blob) => {
+    try {
+      setIsLoadingAvatar(true);
+      const formData = new FormData();
+      formData.append("avatar", croppedImage, "cropped-avatar.jpg");
+
+      const response = await fetch("/api/upload/avatar", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload cropped avatar");
+      }
+
+      const data = await response.json();
+      setUser({ ...user, avatar_url: data.avatarUrl });
+      setIsEditingAvatar(false);
+      toast({
+        title: "Успех",
+        description: "Аватар обновлен",
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить аватар",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingAvatar(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-screen">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </DashboardLayout>
     );
   }
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Профиль пользователя</h1>
-          <p className="text-muted-foreground">
-            Управление вашим профилем и настройками
-          </p>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Профиль</h1>
+          {!isEditing && (
+            <Button onClick={() => setIsEditing(true)}>Редактировать</Button>
+          )}
         </div>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Данные пользователя</CardTitle>
-              {!isEditing && (
-                <Button variant="outline" onClick={() => setIsEditing(true)}>
-                  Редактировать
-                </Button>
+            <CardTitle>Аватар</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <AvatarUpload
+                currentAvatar={user.avatar_url}
+                onAvatarChange={(url) => setUser({ ...user, avatar_url: url })}
+                onEditClick={() => setIsEditingAvatar(true)}
+              />
+              {isEditingAvatar && user.avatar_url && (
+                <AvatarEdit
+                  imageUrl={user.avatar_url}
+                  onCropComplete={handleAvatarEditComplete}
+                  onCancel={() => setIsEditingAvatar(false)}
+                />
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Информация о профиле</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4">
+          <CardContent>
+            <div className="space-y-4">
               <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Имя пользователя
-                </div>
-                <div className="text-lg">{user?.username}</div>
+                <label className="text-sm font-medium">Имя пользователя</label>
+                <Input value={user.username} disabled />
               </div>
-
               <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Название компании
-                </div>
-                <div className="text-lg">{user?.companyName || "Не указано"}</div>
+                <label className="text-sm font-medium">Название компании</label>
+                <Input value={user.companyName} disabled />
               </div>
-
               <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Email
-                </div>
-                {isEditing ? (
-                  <div>
-                    <Input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Введите email"
-                      className={errors.email ? "border-red-500" : ""}
-                    />
-                    {errors.email && (
-                      <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Телефон</label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              {isEditing && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      updateProfile.mutate({ email, phone });
+                    }}
+                    disabled={updateProfile.isPending}
+                  >
+                    {updateProfile.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Сохранить"
                     )}
-                  </div>
-                ) : (
-                  <div className="text-lg">{user?.email || "Не указан"}</div>
-                )}
-              </div>
-
-              <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Телефон
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEmail(user.email || "");
+                      setPhone(user.phone || "");
+                    }}
+                  >
+                    Отмена
+                  </Button>
                 </div>
-                {isEditing ? (
-                  <div>
-                    <Input
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Введите телефон"
-                      className={errors.phone ? "border-red-500" : ""}
-                    />
-                    {errors.phone && (
-                      <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-lg">{user?.phone || "Не указан"}</div>
-                )}
-              </div>
-
-              <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Дата регистрации
-                </div>
-                <div className="text-lg">
-                  {user?.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString("ru-RU", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
-                    : "Не указано"}
-                </div>
-              </div>
+              )}
             </div>
-
-            {isEditing && (
-              <div className="flex gap-2 justify-end">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEmail(user?.email || "");
-                    setPhone(user?.phone || "");
-                    setErrors({});
-                  }}
-                >
-                  Отмена
-                </Button>
-                <Button
-                  onClick={() => updateProfile.mutate({ email, phone })}
-                  disabled={updateProfile.isPending}
-                >
-                  {updateProfile.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Сохранение...
-                    </>
-                  ) : (
-                    "Сохранить"
-                  )}
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

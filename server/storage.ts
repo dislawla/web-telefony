@@ -126,5 +126,9 @@ export class DatabaseStorage implements IStorage {
 
 }
 
+export let storage: DatabaseStorage;
 
-export const storage = await new DatabaseStorage();
+export async function initializeStorage() {
+  storage = await new DatabaseStorage();
+  return storage;
+}

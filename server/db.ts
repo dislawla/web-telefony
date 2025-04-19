@@ -14,6 +14,7 @@ console.log('Loaded env file:', result.parsed);
 console.log('Environment Variables:', process.env);
 
 let pool: pg.Pool;
+let db: ReturnType<typeof drizzle>;
 
 async function createPool() {
   // Предпочитаем использовать DATABASE_URL, если он задан
@@ -44,9 +45,11 @@ export async function getPool() {
   return pool;
 }
 
-// Создаем асинхронную функцию и вызываем ее немедленно
-async function initializeDb() {
-  return drizzle(await getPool(), { schema: schema });
+export async function initializeDb() {
+  if (!db) {
+    db = drizzle(await getPool(), { schema: schema });
+  }
+  return db;
 }
 
-export const db = await initializeDb();
+export { db };

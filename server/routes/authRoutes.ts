@@ -2,11 +2,15 @@ import { Router } from "express";
 import passport from "passport";
 import { hashPassword } from "../auth";
 import { storage } from "../storage";
+import { db } from "../db";
+import { users } from "../schema";
+import { eq } from "drizzle-orm";
+import { User } from "@shared/schema";
 
 const router = Router();
 
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("local", (err: any, user: User | false, info: { message?: string }) => {
     if (err) return next(err);
     if (!user) {
       return res.status(401).json({ message: info?.message || "Authentication failed" });
@@ -60,5 +64,63 @@ router.post("/register", async (req, res, next) => {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   });
+
+router.patch("/user", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const { email, phone } = req.body;
+    const userId = req.user.id;
+
+    await db.update(users)
+      .set({ 
+        email: email || null,
+        phone: phone || null
+      })
+      .where(eq(users.id, userId));
+
+    const updatedUser = await db.select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .then(rows => rows[0]);
+
+    const { password, ...safeUser } = updatedUser;
+    res.json(safeUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Error updating user profile" });
+  }
+});
+
+router.post("/user/avatar-position", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const { position, size } = req.body;
+    const userId = req.user.id;
+
+    await db.update(users)
+      .set({ 
+        avatar_position: position,
+        avatar_size: size
+      })
+      .where(eq(users.id, userId));
+
+    const updatedUser = await db.select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .then(rows => rows[0]);
+
+    const { password, ...safeUser } = updatedUser;
+    res.json(safeUser);
+  } catch (error) {
+    console.error("Error updating avatar position:", error);
+    res.status(500).json({ error: "Error updating avatar position" });
+  }
+});
 
 export default router;

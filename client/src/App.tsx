@@ -19,6 +19,7 @@ import { ProtectedRoute } from "@/components/protected-route";
 import AIPage from "@/pages/AI chat/ai";
 import GoogleGeminiPage from "@/pages/AI chat/google-gemini";
 import ChatGptPage from "@/pages/AI chat/chat-gpt";
+import { TestRecording } from "@/pages/TestRecording";
 
 function Router() {
   return (
@@ -34,9 +35,10 @@ function Router() {
       <ProtectedRoute path="/settings/telephony" component={TelephonySettings} />
       <ProtectedRoute path="/settings/database" component={DatabaseSettings} />
       <ProtectedRoute path="/settings/crm" component={CRMSettings} />
-      <ProtectedRoute path="/ai" component={AIPage} /> {/* Ensure this route is correct */}
+      <ProtectedRoute path="/ai" component={AIPage} />
       <ProtectedRoute path="/ai/google-gemini" component={GoogleGeminiPage} />
       <ProtectedRoute path="/ai/chat-gpt" component={ChatGptPage} />
+      <ProtectedRoute path="/test-recording" component={TestRecording} />
       <Route component={NotFound} />
     </Switch>
   );

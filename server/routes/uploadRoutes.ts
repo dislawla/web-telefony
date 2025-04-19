@@ -5,23 +5,16 @@ import { db } from '../db';
 import { users } from '../schema';
 import { eq } from 'drizzle-orm';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import sharp from 'sharp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
 // Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-    const uploadDir = path.join(__dirname, '../../uploads/avatars');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -49,7 +42,27 @@ router.post('/avatar', upload.single('avatar'), async (req: express.Request, res
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    // Создаем директорию для аватаров, если она не существует
+    const uploadDir = path.join(__dirname, '../../uploads/avatars');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // Генерируем уникальное имя файла
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = `avatar-${uniqueSuffix}.jpg`;
+    const filepath = path.join(uploadDir, filename);
+
+    // Обрабатываем изображение с помощью sharp
+    await sharp(req.file.buffer)
+      .resize(200, 200, {
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: 90 })
+      .toFile(filepath);
+
+    const avatarUrl = `/uploads/avatars/${filename}`;
 
     await db.update(users)
       .set({ avatar_url: avatarUrl })

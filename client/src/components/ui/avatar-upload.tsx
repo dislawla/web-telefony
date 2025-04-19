@@ -1,23 +1,25 @@
-import { useState } from "react";
-import { Button } from "./button";
-import { Upload, X } from "lucide-react";
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface AvatarUploadProps {
   currentAvatar?: string;
-  onUpload: (url: string) => void;
+  onAvatarChange: (avatarUrl: string) => void;
+  onEditClick?: () => void;
 }
 
-export function AvatarUpload({ currentAvatar, onUpload }: AvatarUploadProps) {
-  const [isUploading, setIsUploading] = useState(false);
+export function AvatarUpload({ currentAvatar, onAvatarChange, onEditClick }: AvatarUploadProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Проверяем размер файла (максимум 5MB)
+    // Проверка размера файла (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Ошибка",
@@ -27,91 +29,96 @@ export function AvatarUpload({ currentAvatar, onUpload }: AvatarUploadProps) {
       return;
     }
 
-    // Проверяем тип файла
+    // Проверка типа файла
     if (!file.type.startsWith("image/")) {
       toast({
         title: "Ошибка",
-        description: "Пожалуйста, загрузите изображение",
+        description: "Пожалуйста, выберите изображение",
         variant: "destructive",
       });
       return;
     }
 
-    setIsUploading(true);
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("avatar", file);
 
     try {
-      const formData = new FormData();
-      formData.append("avatar", file);
-
       const response = await apiRequest("POST", "/api/upload/avatar", formData);
       const data = await response.json();
-
-      if (response.ok) {
-        onUpload(data.url);
-        toast({
-          title: "Успешно",
-          description: "Аватар успешно загружен",
-        });
-      } else {
-        throw new Error(data.message || "Ошибка при загрузке аватара");
+      onAvatarChange(data.avatarUrl);
+      if (onEditClick) {
+        onEditClick(); // Открываем редактор после загрузки
       }
-    } catch (error) {
+      toast({
+        title: "Успешно",
+        description: "Аватар успешно загружен",
+      });
+    } catch (error: any) {
       toast({
         title: "Ошибка",
-        description: error instanceof Error ? error.message : "Ошибка при загрузке аватара",
+        description: error.message || "Произошла ошибка при загрузке аватара",
         variant: "destructive",
       });
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="relative h-24 w-24">
+    <div className="relative group">
+      <div className="relative w-32 h-32 rounded-full overflow-hidden">
         {currentAvatar ? (
-          <>
-            <img
-              src={currentAvatar}
-              alt="Аватар"
-              className="h-full w-full rounded-full object-cover"
-            />
-            <Button
-              variant="destructive"
-              size="icon"
-              className="absolute -right-2 -top-2 h-6 w-6 rounded-full"
-              onClick={() => onUpload("")}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </>
+          <img
+            src={currentAvatar}
+            alt="Аватар"
+            className="w-full h-full object-cover"
+          />
         ) : (
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
-            <Upload className="h-8 w-8 text-muted-foreground" />
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-500">Нет фото</span>
           </div>
         )}
-      </div>
-      <div>
-        <input
-          type="file"
-          id="avatar-upload"
-          className="hidden"
-          accept="image/*"
-          onChange={handleFileChange}
-          disabled={isUploading}
-        />
-        <label htmlFor="avatar-upload">
+        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <Button
-            variant="outline"
-            asChild
-            disabled={isUploading}
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
           >
-            <span>
-              {isUploading ? "Загрузка..." : "Загрузить аватар"}
-            </span>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Загрузка...
+              </>
+            ) : (
+              "Загрузить"
+            )}
           </Button>
-        </label>
+        </div>
       </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+      {currentAvatar && onEditClick && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2 w-full"
+          onClick={onEditClick}
+        >
+          Изменить аватар
+        </Button>
+      )}
     </div>
   );
 } 

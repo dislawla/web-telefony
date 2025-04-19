@@ -13,6 +13,7 @@ import {
   Database,
   MessageCircle,
   UserPlus,
+  Mic,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,6 +80,11 @@ function Navigation() {
       href: "/contacts",
       icon: <Users className="h-4 w-4" />,
       label: "Контакты",
+    },
+    {
+      href: "/test-recording",
+      icon: <Mic className="h-4 w-4" />,
+      label: "Тест записи",
     },
   ];
 
